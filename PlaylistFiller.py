@@ -5,7 +5,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
 import spotipy.util as util
 import pprint
-from tkinter import Tk, Entry, Button, Label
+from tkinter import Tk, Entry, Button, Label, StringVar, W
 from time import sleep
 
 pp = pprint.PrettyPrinter(indent=1)
@@ -124,11 +124,11 @@ if __name__ == "__main__":
 
     try:
         driver = webdriver.Chrome()
-        
+
         # probably should use an intern account or something, not the actual user's user/pass
-        login_to_kvrx(driver, "your kvrx username", "your kvrx password")
+        login_to_kvrx(driver, "kvrx username", "kvrx password")
 
         fill_out_playlist(driver, playlist)
         driver.close()
-    except(Exception e):
+    except(Exception):
         driver.close()
