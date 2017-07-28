@@ -5,8 +5,12 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
 import spotipy.util as util
 import pprint
+from tkinter import Tk, Entry, Button, Label
+from time import sleep
 
 pp = pprint.PrettyPrinter(indent=1)
+playlist_uri = None
+
 
 # KVRX Playlist Filler
 # Make sure you download the latest "chromedriver" from the web
@@ -21,38 +25,40 @@ scope = 'user-library-read'
 def fill_out_song_info(driver, track_name, album_name, artist, track_index):
     base_track_id = "edit-field-playlist-tracks-und-{}-{}"
     
-    track_name_form = driver.find_element_by_id(base_track_id.format(i, "track-name"))
+    track_name_form = driver.find_element_by_id(base_track_id.format(track_index, "track-name"))
     track_name_form.send_keys(track_name)
 
-    album_name_form = driver.find_element_by_id(base_track_id.format(i, "album-name"))
+    album_name_form = driver.find_element_by_id(base_track_id.format(track_index, "album-name"))
     album_name_form.send_keys(album_name)
 
-    artist_form = driver.find_element_by_id(base_track_id.format(i, "artist"))
+    artist_form = driver.find_element_by_id(base_track_id.format(track_index, "artist"))
     artist_form.send_keys(artist)
 
-    add_more_button = driver.find_element_by_name("field_playlist_tracks_add_more").click()   
+    add_more_button = driver.find_element_by_name("field_playlist_tracks_add_more").click()
+    sleep(.5)
 
-def create_playlist(spotify_playlist):
+
+def fill_out_playlist(driver, playlist):
     driver.find_element_by_partial_link_text("Create Playlist").click()  
 
     title_form = driver.find_element_by_id("edit-title")
     title_form.send_keys("Playlist Title")  
-    playlist_length = len(spotify_playlist)
+    playlist_length = len(playlist['track_names'])
     for i in range(playlist_length):
         #get these from spotify, will be part of a list of playlist track objects or something
-        track_name = "super edgy non blacklisted song"
-        album_name = "super edgy non blacklisted album"
-        artist = "super edgy non blacklisted artist"
-        fill_out_song_info(track_name, album_name, artist, i)
+        track_name = playlist['track_names'][i]
+        album_name = playlist['album_names'][i]
+        artist = playlist['artists'][i]
+        fill_out_song_info(driver, track_name, album_name, artist, i)
 
 def login_to_kvrx(driver, user_name, pass_word):
     driver.get("http://www.kvrx.org/user")
 
     username = driver.find_element_by_id("edit-name")
-    username.send_keys("your_kvrx_username")
+    username.send_keys(user_name)
 
     password = driver.find_element_by_id("edit-pass")
-    password.send_keys("your_kvrx_password")
+    password.send_keys(pass_word)
 
     driver.find_element_by_id("edit-submit").click()
 
@@ -69,6 +75,7 @@ def get_information_from_tracks(sp, playlist, tracks):
     while tracks['next']:
         tracks = sp.next(tracks)
         playlist = get_track_information(playlist, tracks)
+    return playlist
 
 def create_playlist(sp, username, playlist_id):
     playlist = {}
@@ -78,10 +85,35 @@ def create_playlist(sp, username, playlist_id):
     playlist['artists'] = []
     playlist['track_names'] = []
     playlist = get_information_from_tracks(sp, playlist, tracks)
+    return playlist
+
+def parse_playlist_uri(raw_uri):
+    raw_uri = raw_uri.split(':')
+    return raw_uri[2], raw_uri[4]
+
+def get_playlist_uri_from_dialog():
+    master = Tk()
+    Label(master, text="Insert Playlist URI here").grid(row=0)
+
+    playlist_uri = StringVar()
+
+    playlist_uri_entry = Entry(master, textvariable=playlist_uri)
+    playlist_uri_entry.insert(10, 'spotify:user:1270874820:playlist:6pu0ez0zwoeJI5yBK30R3o')
+
+    playlist_uri_entry.grid(row=0, column=1)
+
+    Button(master, text='Quit', command=master.quit).grid(row=3, column=0, sticky=W, pady=4)
+    Button(master, text='Submit', command=master.quit).grid(row=3, column=1, sticky=W, pady=4)
+    master.mainloop()
+    master.destroy()
+    return playlist_uri.get()
+
 
 if __name__ == "__main__":
-    username = '1270874820'
-    playlist_id = '6pu0ez0zwoeJI5yBK30R3o'
+    # get playlist uri from user
+    playlist_uri = get_playlist_uri_from_dialog()
+    username, playlist_id = parse_playlist_uri(playlist_uri)
+    print(username, playlist_id)
 
     token = util.prompt_for_user_token(username, scope)
 
@@ -90,14 +122,13 @@ if __name__ == "__main__":
 
     playlist = create_playlist(sp,username, playlist_id)
 
-    pp.pprint(playlist)
+    try:
+        driver = webdriver.Chrome()
+        
+        # probably should use an intern account or something, not the actual user's user/pass
+        login_to_kvrx(driver, "your kvrx username", "your kvrx password")
 
-    driver = webdriver.Chrome()
-
-    login_to_kvrx(driver, "your_kvrx_username", "your_kvrx_password")
-
-    spotify_playlist = spotify.get_playlist("playlist_url")
-    create_playlist(spotify_playlist)
-
-    driver.close()
-
+        fill_out_playlist(driver, playlist)
+        driver.close()
+    except(Exception e):
+        driver.close()
