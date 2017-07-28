@@ -9,7 +9,7 @@ I'm not adding support for super old/weird computers or anything, I'm mainly jus
 Also getting playlist stuff from Youtube might happen, but we'll see. I'll probably also add a feature to allow you to specify a "playlist" file that looks like this:
 
   album id - track name - album name - artist - album label 
-  ...  
+  ...    
   last album id - last track name - last album name - last artist - last album label  
 
 
