@@ -15,7 +15,7 @@ I'll probably also add a feature to allow you to specify a "playlist" file that 
   last album id - last track name - last album name - last artist - last album label  
 
 
-It may be the case that the user must install chromedriver and specify the path when the application starts, but that's pretty easy to do for both me and the user. 
+It may be the case that the user must install chromedriver and specify the path when the application starts(only once), but that's pretty easy to do for both me and the user. 
 
 Instructions:
 Navigate to your spotify playlist on the spotify app
