@@ -21,6 +21,6 @@ select 'Share' and click 'URI'
 This will copy the 'Playlist URI' to your clipboard, this contains a number version of your playlist and username
 
 Run the playlist filler and you will see a dialog box like this:
-![Dialog box](http://i.imgur.com/JIwIqrP.png)
+![Dialog box](http://i.imgur.com/ItiD70o.png)
 
 Paste the URI you copied into the box, along with the playlist title and date and hit submit, it will then open up a browser and fill in all of the tracks(the browser will be the one that says 'Chrome is being controlled by automated test software'), you can then change the playlist description after it is created. 
