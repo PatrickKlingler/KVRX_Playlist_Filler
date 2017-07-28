@@ -6,7 +6,9 @@ If you're running this for development/testing/curiosity you need python3 and yo
 I'm working on exporting this project to be run as a standalone application on Windows/Linux/Mac
 
 I'm not adding support for super old/weird computers or anything, I'm mainly just making this work so it can run normally on the KVRX booth machine(Mac). And you should not ask me for any more features/automation because then I'm just recreating the website. If you want more features you should add them yourself and submit a pull request. I will add more features as I see fit. 
-Also getting playlist stuff from Youtube might happen, but we'll see. I'll probably also add a feature to allow you to specify a "playlist" file that looks like this:
+Also getting playlist stuff from Youtube might happen, but we'll see. 
+
+I'll probably also add a feature to allow you to specify a "playlist" file that looks like this:
 
   album id - track name - album name - artist - album label   
   ...    
